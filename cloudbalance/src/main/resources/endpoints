@@ -1,0 +1,143 @@
+
+API Testing Endpoints
+
+Authentication
+- Login: POST `http://localhost:8080/api/api/auth/login`
+  Body: `{"username": "admin", "password": "admin123"}`
+  Save the sessionToken from response
+
+- Logout: POST `http://localhost:8080/api/api/auth/logout`
+  Header: `Authorization: Bearer [sessionToken]`
+
+Users
+- Get All Users: GET `http://localhost:8080/api/api/users`
+  Header: `Authorization: Bearer [sessionToken]`
+
+- Get User by ID: GET `http://localhost:8080/api/api/users/{id}`
+  Header: `Authorization: Bearer [sessionToken]`
+
+- Create User: POST `http://localhost:8080/api/api/users`
+  Header: `Authorization: Bearer [sessionToken]`
+  Body:
+```json
+{
+  "username": "newuser",
+  "password": "password123",
+  "firstName": "New",
+  "lastName": "User",
+  "email": "new@example.com",
+  "roleName": "ROLE_CUSTOMER"
+}
+```
+
+- Update User: PUT `http://localhost:8080/api/api/users/{id}`
+  Header: `Authorization: Bearer [sessionToken]`
+  Body: Include only fields to update
+
+Cloud Accounts
+- Get All Accounts: GET `http://localhost:8080/api/api/accounts`
+  Header: `Authorization: Bearer [sessionToken]`
+
+- Create Account: POST `http://localhost:8080/api/api/accounts`
+  Header: `Authorization: Bearer [sessionToken]`
+  Body:
+```json
+{
+  "accountId": "123456789012",
+  "accountName": "Test Account",
+  "region": "us-east-1",
+  "provider": "AWS"
+}
+```
+
+- Get Orphaned Accounts: GET `http://localhost:8080/api/api/accounts/orphaned`
+  Header: `Authorization: Bearer [sessionToken]`
+
+Cost Explorer
+- Get Cost Data: GET `http://localhost:8080/api/api/cost-explorer/cost-data?accountId=123456789012&startDate=2025-01-01&endDate=2025-04-01`
+  Header: `Authorization: Bearer [sessionToken]`
+
+AWS Services
+- Get AWS Service Data: GET `http://localhost:8080/api/api/aws/services/ec2?accountId=123456789012`
+  Header: `Authorization: Bearer [sessionToken]`
+
+
+___________________________
+
+# API Testing Endpoints
+
+## Authentication
+- **Login**: POST `http://localhost:8080/api/api/auth/login`
+  - Body: `{"username": "admin", "password": "admin123"}`
+  - Save the sessionToken from response
+
+- **Logout**: POST `http://localhost:8080/api/api/auth/logout`
+  - Header: `Authorization: Bearer [sessionToken]`
+
+## Users
+- **Get All Users**: GET `http://localhost:8080/api/api/users`
+  - Header: `Authorization: Bearer [sessionToken]`
+
+- **Get User by ID**: GET `http://localhost:8080/api/api/users/{id}`
+  - Header: `Authorization: Bearer [sessionToken]`
+
+- **Create User**: POST `http://localhost:8080/api/api/users`
+  - Header: `Authorization: Bearer [sessionToken]`
+  - Body:
+    ```json
+    {
+      "username": "newuser",
+      "password": "password123",
+      "firstName": "New",
+      "lastName": "User",
+      "email": "new@example.com",
+      "roleName": "ROLE_CUSTOMER"
+    }
+    ```
+
+- **Update User**: PUT `http://localhost:8080/api/api/users/{id}`
+  - Header: `Authorization: Bearer [sessionToken]`
+  - Body: Include only fields to update
+
+## Cloud Accounts
+- **Get All Accounts**: GET `http://localhost:8080/api/api/accounts`
+  - Header: `Authorization: Bearer [sessionToken]`
+
+- **Create Account**: POST `http://localhost:8080/api/api/accounts`
+  - Header: `Authorization: Bearer [sessionToken]`
+  - Body:
+    ```json
+    {
+      "accountId": "123456789012",
+      "accountName": "Test Account",
+      "region": "us-east-1",
+      "provider": "AWS"
+    }
+    ```
+
+- **Get Orphaned Accounts**: GET `http://localhost:8080/api/api/accounts/orphaned`
+  - Header: `Authorization: Bearer [sessionToken]`
+
+## AWS Services
+I see the issue. Your CloudAccountController is mapped to `/api/accounts`, not `/api/cloud-accounts`.
+
+Try these URLs for testing:
+
+1. Get all accounts:
+   - GET to `http://localhost:8080/api/accounts`
+   - Include your Authorization header with token
+
+2. Get specific account:
+   - GET to `http://localhost:8080/api/accounts/1` (or other IDs)
+   - Same Authorization header
+
+3. Get orphaned accounts:
+   - GET to `http://localhost:8080/api/accounts/orphaned`
+   - Same Authorization header
+
+After getting valid account IDs, test your AWS service endpoints:
+   - GET to `http://localhost:8080/api/aws-services/ec2/{accountId}`
+   - GET to `http://localhost:8080/api/aws-services/rds/{accountId}`
+   - GET to `http://localhost:8080/api/aws-services/asg/{accountId}`
+
+Make sure your user has the right roles since your controller methods have role-based access restrictions.
